@@ -1,3 +1,5 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../data/provides/database_helper.dart';
 
 class UserRepository {
@@ -24,6 +26,11 @@ class UserRepository {
     if (result.isNotEmpty) {
       final token =
           result.first['token'] as String; // Obtener el token almacenado
+
+      // Guardar el token en SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('authToken', token);
+
       return token;
     } else {
       throw Exception('Invalid credentials');
@@ -33,6 +40,10 @@ class UserRepository {
   Future<void> signOut() async {
     final db = await _databaseHelper.database;
     await db.update('Users', {'token': null});
+
+    // Eliminar el token de SharedPreferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('authToken');
   }
 
   String generateToken() {
@@ -40,5 +51,11 @@ class UserRepository {
         24,
         (index) => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split(
             '')[(index + DateTime.now().millisecondsSinceEpoch) % 36]).join();
+  }
+
+  // Método para obtener el token desde SharedPreferences
+  Future<String?> getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('authToken');
   }
 }

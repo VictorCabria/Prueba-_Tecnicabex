@@ -3,7 +3,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:pruebatecnicabex1/presentation/screens/login_screen.dart';
 import 'package:pruebatecnicabex1/presentation/screens/note_screen.dart';
+import '../blocs/auth/auth_bloc.dart';
+import '../blocs/auth/auth_event.dart';
 import '../blocs/note/note_bloc.dart';
 import '../blocs/note/note_event.dart';
 import '../blocs/note/note_state.dart';
@@ -257,12 +260,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ),
                 SizedBox(width: 10.dp),
-                IconButton(
+               IconButton(
                   icon: Icon(Icons.logout),
                   onPressed: () {
-                    Navigator.pop(context);
+                    context.read<AuthBloc>().add(SignOut());
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => LoginScreen()),
+                    );
                   },
                 )
+
               ],
             ),
           ),
